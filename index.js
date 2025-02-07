@@ -26,4 +26,4 @@ app.get("/", (req, res) => {
 })
 
 
-app.listen(PORT, () => console.log("Server Is Running PORT" + PORT))
+app.listen(PORT || 4000, () => console.log("Server Is Running PORT" + PORT))
