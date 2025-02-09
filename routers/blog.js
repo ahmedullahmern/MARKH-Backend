@@ -34,6 +34,11 @@ router.get("/getcurentuserblog", authenticationUser, async (req, res) => {
     }
 });
 
-
+router.delete("/deletcurrent/:id", authenticationUser, async (req, res) => {
+    const blogFromDB = await Blog.findById(req.params.id)
+    if (!blogFromDB) return sendResponse(res, 404, null,true, "Blog not found")
+    await Blog.deleteOne({ _id: req.params.id })
+    sendResponse(res, 200, null, false, "Blog Deleted Successfully")
+})
 
 export default router
