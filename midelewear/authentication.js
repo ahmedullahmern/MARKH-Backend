@@ -5,10 +5,13 @@ import User from '../models/auth.js';
 
 export async function authenticationUser(req, res, next) {
     try {
-        const bearerToken = req?.headers?.authorization
+        const bearerToken = req?.headers?.authorization;
+        console.log("Bearer Token:", bearerToken); 
+
         const token = bearerToken?.split(" ")[1]
         if (!token) return sendResponse(res, 403, null, true, "Token not Provide")
-        const decoded = jwt.verify(token, process.env.AUTH_SECRET)
+        const decoded = jwt.verify(token, process.env.AUTH_SECRET);
+        console.log("Decoded Token:", decoded);
         if (decoded) {
             const user = await User.findById(decoded._id)
             if (!user) {
@@ -20,7 +23,7 @@ export async function authenticationUser(req, res, next) {
             return sendResponse(res, 500, null, true, "SomeThing Went Worng")
         }
     } catch (error) {
-        return sendResponse(res, 500, null, true, "error.message in middleweare AuthenticationUser")
+        return sendResponse(res, 500, null, true, error.message || "error.message in middleweare AuthenticationUser")
     }
 }
 
@@ -28,13 +31,13 @@ export async function authenticationUser(req, res, next) {
 export async function authenticationAdmin(req, res, next) {
     try {
         const bearerToken = req?.headers?.authorization
-        console.log("TOKEN MISSONG==>",req?.headers?.authorization)
+        console.log("TOKEN MISSONG==>", req?.headers?.authorization)
         if (!bearerToken) return sendResponse(res, 403, null, true, "Token not Provide")
 
         const token = bearerToken?.split(" ")[1]
         const decoded = jwt.verify(token, process.env.AUTH_SECRET)
         req.user = decoded
-        console.log("decodde==>",decoded)
+        console.log("decodde==>", decoded)
         if (decoded.role == "admin") {
             next()
         } else {
