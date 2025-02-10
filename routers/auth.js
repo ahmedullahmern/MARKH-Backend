@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import sendResponse from '../helpers/sendResponse.js';
 import express from 'express';
-import { authenticationAdmin } from '../midelewear/authentication.js';
+import { authenticationUser } from '../midelewear/authentication.js';
 import User from '../models/auth.js';
 import { loginSchema, registerSchema } from '../validation/authValidation.js';
 
@@ -32,6 +32,17 @@ router.post("/login", async (req, res) => {
     if (!isPasswordValid) return sendResponse(res, 403, null, true, "Invalid  Credentails")
     var token = jwt.sign(user, process.env.AUTH_SECRET);
     sendResponse(res, 200, { user, token }, false, "User Login successfully")
+})
+
+router.get("/myInfo", authenticationUser, async (req, res) => {
+    try {
+        const user = await User.findOne({
+            find: req.user.find
+        })
+        return sendResponse(res, 200, user, false, "Fetched Current User")
+    } catch (error) {
+        return sendResponse(res, 500, null, true, error.message)
+    }
 })
 
 export default router
